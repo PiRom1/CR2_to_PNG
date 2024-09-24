@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 
 from .forms import *
@@ -103,14 +103,14 @@ def convert(request):
 
     return HttpResponseRedirect('/download')
 
-
+progress = 0
 def convert_2(request):
     CR2_PATH = 'media/images/cr2'
     PNG_PATH = 'media/images/png'
 
     images = os.listdir(CR2_PATH)
     
-    for image in images:
+    for i,image in enumerate(images):
         
         cr2 = Image.open(os.path.join(CR2_PATH, image))
         
@@ -125,11 +125,12 @@ def convert_2(request):
         
         del(cr2)
         os.remove(os.path.join(CR2_PATH, image))
+
+        progress = int(i+1 * 100 / len(images))
+        print(progress)
         
     
     return HttpResponseRedirect('/download')
-
-
 
 import os
 import zipfile
