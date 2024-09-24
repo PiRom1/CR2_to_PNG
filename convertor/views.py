@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.conf import settings
 
 from .forms import *
 # Create your views here.
@@ -44,6 +45,40 @@ def import_photos(request):
 
 
 
+def import_photos_2(request):
+
+    user = request.user
+    is_valid = False
+    if request.method == "POST":
+        files = request.FILES.getlist('files')
+        print(files)
+        if files:
+        
+            for file in files:
+                print(file.name.split('.')[-1].lower())
+                if file.name.split('.')[-1].lower() == 'cr2':
+                    
+                    is_valid = True
+                    file_path = os.path.join('media/images/cr2', file.name)
+                    # Sauvegarder le fichier en utilisant les chunks (utile pour les gros fichiers)
+                    with open(file_path, 'wb+') as destination:
+                        for chunk in file.chunks():
+                            destination.write(chunk)
+            print(is_valid)
+            if is_valid:
+                return HttpResponseRedirect('convert_2')
+        
+        
+
+   
+    
+
+    context = {}
+    return render(request, 'convertor/import_photos_2.html', context)
+
+
+
+
 
 
 
@@ -66,6 +101,32 @@ def convert(request):
         os.remove(os.path.join("media", str(image.file)))
         
 
+    return HttpResponseRedirect('/download')
+
+
+def convert_2(request):
+    CR2_PATH = 'media/images/cr2'
+    PNG_PATH = 'media/images/png'
+
+    images = os.listdir(CR2_PATH)
+    
+    for image in images:
+        
+        cr2 = Image.open(os.path.join(CR2_PATH, image))
+        
+
+        
+        new_image = image[:-3] + 'png'
+        
+        new_path = os.path.join(PNG_PATH, new_image)
+
+        print(new_path)
+        cr2.save(new_path)
+        
+        del(cr2)
+        os.remove(os.path.join(CR2_PATH, image))
+        
+    
     return HttpResponseRedirect('/download')
 
 

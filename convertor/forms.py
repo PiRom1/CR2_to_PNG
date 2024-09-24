@@ -13,33 +13,20 @@ class PhotoForm(forms.ModelForm):
             }
 
 
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
+class FolderForm(forms.Form):
+    path = forms.FilePathField(path = "/", allow_files = False, allow_folders = True)
 
 
-class MultipleFileField(forms.FileField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
-
-    def clean(self, data, initial=None):
-        single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = [single_file_clean(data, initial)]
-        return result
-
-class FileFieldForm(forms.Form):
-    file_field = MultipleFileField()
-
-class ImagesForm(forms.ModelForm):
-    pic = forms.FileField(widget = forms.TextInput(attrs={
-            "name": "images",
-            "type": "File",
-            "class": "form-control",
-            "multiple": "True",
-        }), label = "")
+class PhotoSetForm(forms.ModelForm):
     class Meta:
-        model = Photo
+        model = PhotoSet
+        fields = ['text']
+
+class PhotoFileForm(forms.ModelForm):
+    class Meta:
+        model = PhotoFile
         fields = ['file']
+        widgets = {
+            'file': forms.FileInput(attrs={'allow_multiple_selected': True}),
+        }
+        # widget is important to upload multiple files
