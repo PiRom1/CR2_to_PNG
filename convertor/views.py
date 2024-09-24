@@ -15,36 +15,6 @@ def convert_to_png(image):
 
 
 
-# def import_photos(request):
-
-#     form = PhotoForm(request.POST, request.FILES)
-    
-#     if request.method == "POST":
-        
-#         print(form.is_valid())
-
-#         if form.is_valid():
-#             name = form.cleaned_data['file']
-#             print("name : ",name)
-
-#             extension = str(name).split('.')[-1]
-
-#             if extension.lower() == 'cr2':
-                
-#                 form.save()
-#                 return HttpResponseRedirect("convert")
-    
-#     form = PhotoForm()
-
-#     context = {"form" : form}
-
-#     url = "convertor/import_photos.html"
-
-#     return render(request, url, context)
-
-
-
-
 def import_photos(request):
 
     form = PhotoForm(request.POST, request.FILES)
@@ -64,13 +34,16 @@ def import_photos(request):
                 form.save()
                 return HttpResponseRedirect("convert")
     
-    form = ImagesForm()
+    form = PhotoForm()
 
     context = {"form" : form}
 
     url = "convertor/import_photos.html"
 
     return render(request, url, context)
+
+
+
 
 
 
@@ -106,7 +79,7 @@ from io import BytesIO
 def download_zip(request):
     # Chemin vers le dossier contenant les fichiers que tu veux zipper
     folder_path = 'media/images/png'
-
+    print("download")
     # Crée un fichier en mémoire
     zip_buffer = BytesIO()
 
